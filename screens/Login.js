@@ -21,9 +21,11 @@ export default function Login({ onLogin, baseUrl }) {
       if (response.status === 200) {
         const data = await response.json();
         const userId = data.id;
-  
+        console.log("USERNAME SAVING");
         await AsyncStorage.setItem('@MyApp:username', username);
-        await AsyncStorage.setItem('@MyApp:id', userId);
+        console.log("ID SAVING");
+
+        await AsyncStorage.setItem('@MyApp:id', toString(userId));
   
         onLogin(true);
         showToast(ALERT_TYPE.SUCCESS, 'Success', 'Login successful!');

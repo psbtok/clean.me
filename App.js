@@ -9,7 +9,7 @@ import Footer from './screens/Footer'; // Импортируйте компон�
 
 const Stack = createStackNavigator();
 
-const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = 'http://192.168.0.7:8000';
 
 export default function App() {
   const [authToken, setAuthToken] = useState(null);
@@ -22,6 +22,7 @@ export default function App() {
 
   const saveData = async () => {
     try {
+      console.log("TOKEN SAVING");
       await AsyncStorage.setItem('@MyApp:authToken', authToken);
       console.log('Token saved successfully.');
     } catch (error) {
@@ -61,37 +62,35 @@ export default function App() {
   };
 
   return (
-    <View style={styles.appContainer}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {!authToken ? (
-            <Stack.Screen 
-              name="Login" 
-              options={{ headerShown: false }}
-            >
-              {(props) => <Login {...props} onLogin={handleLogin} baseUrl={BASE_URL} />} 
-            </Stack.Screen>
-          ) : (
-            <Stack.Screen 
-              name="Home" 
-              options={{
-                headerTitle: `Welcome, ${username || 'Guest'}`,
-                headerRight: () => (
-                  <View style={styles.buttonContainer}>
-                    <Pressable onPress={handleLogout}>
-                      <Text style={styles.logoutText}>Logout</Text>
-                    </Pressable>
-                  </View>
-                ),
-              }}
-            >
-              {props => <HomeScreen {...props} username={username} />}
-            </Stack.Screen>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {!authToken ? (
+          <Stack.Screen 
+            name="Login" 
+            options={{ headerShown: false }}
+          >
+            {(props) => <Login {...props} onLogin={handleLogin} baseUrl={BASE_URL} />} 
+          </Stack.Screen>
+        ) : (
+          <Stack.Screen 
+            name="Home" 
+            options={{
+              headerTitle: `Welcome, ${username || 'Guest'}`,
+              headerRight: () => (
+                <View style={styles.buttonContainer}>
+                  <Pressable onPress={handleLogout}>
+                    <Text style={styles.logoutText}>Logout</Text>
+                  </Pressable>
+                </View>
+              ),
+            }}
+          >
+            {props => <HomeScreen {...props} username={username} />}
+          </Stack.Screen>
+        )}
+      </Stack.Navigator>
       <Footer handleLogout={handleLogout} />
-    </View>
+    </NavigationContainer>
   );
 }
 
