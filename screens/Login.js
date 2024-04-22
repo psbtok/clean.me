@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { colors } from './constants/colors.js'
+import { colors } from './constants/colors.js';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 export default function Login({ onLogin, baseUrl }) {
   const [username, setUsername] = useState('');
@@ -25,12 +26,23 @@ export default function Login({ onLogin, baseUrl }) {
         await AsyncStorage.setItem('@MyApp:id', userId);
   
         onLogin(true);
+        showToast(ALERT_TYPE.SUCCESS, 'Success', 'Login successful!');
       } else {
         console.error('Login failed:', response.statusText);
+        showToast(ALERT_TYPE.ERROR, 'Error', 'Login failed. Please try again.');
       }
     } catch (error) {
       console.error('Error logging in:', error);
+      showToast(ALERT_TYPE.ERROR, 'Error', 'An error occurred while logging in.');
     }
+  };
+
+  const showToast = (type, title, textBody) => {
+    Toast.show({
+      type,
+      title,
+      textBody,
+    });
   };
   
   return (
@@ -81,7 +93,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontWeight: '500',
     color: colors.grey5,
-
   },
   textSub: {
     fontSize: 12,
@@ -95,7 +106,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     padding: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
+    backgroundColor: colors.grey5,
+    color: colors.grey2,
     borderRadius: 5,
   },
   button: {
