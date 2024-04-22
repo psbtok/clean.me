@@ -4,8 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
-import Login from './screens/Login';
+import Login from './screens/login/Login';
 import Footer from './screens/Footer'; // Импортируйте компонент Footer
+import { colors } from './constants/colors';
+import { StatusBar } from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -62,7 +64,9 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer>
+    <NavigationContainer style={styles.appContainer}>
+    <StatusBar color="white" barStyle="light-content" />
+    <View style={styles.container}>
       <Stack.Navigator>
         {!authToken ? (
           <Stack.Screen 
@@ -89,12 +93,16 @@ export default function App() {
           </Stack.Screen>
         )}
       </Stack.Navigator>
-      <Footer handleLogout={handleLogout} />
-    </NavigationContainer>
+    </View>
+    {/* <Footer handleLogout={handleLogout} /> */}
+  </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   buttonContainer: {
     marginRight: 10,
   },
@@ -106,6 +114,6 @@ const styles = StyleSheet.create({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#1C1C1C',
+    backgroundColor: colors.grey1,
   }
 });

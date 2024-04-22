@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { colors } from './constants/colors.js';
+import { colors } from '../../constants/colors.js';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 export default function Login({ onLogin, baseUrl }) {
@@ -49,25 +49,15 @@ export default function Login({ onLogin, baseUrl }) {
   
   return (
     <View style={styles.container}>
-      <View style={styles.form}>
-        <Text style={styles.textMain}>Необходима авторизация</Text>
-        <Text style={styles.textSub}>Для оплаты мойки и начисления бонусных баллов, необходимо зарегистрироваться </Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          onChangeText={text => setUsername(text)}
-          value={username}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          onChangeText={text => setPassword(text)}
-          value={password}
-          secureTextEntry={true}
-        />
-        <Pressable onPress={handleLogin} style={styles.button}>
-          <Text style={styles.buttonText}>Вход</Text>
-        </Pressable>
+      <View style={styles.containerUpper}>
+          <Text style={styles.textMain}>Автомойки {'\n'}рядом.</Text>
+          <Pressable onPress={handleLogin} style={styles.button}>
+            <Text style={styles.buttonText}>Создать аккаунт</Text>
+          </Pressable>
+      </View>
+      <View style={styles.containerLower}>
+        <Text style={styles.textSub}>Уже есть аккаунт? </Text>
+        <Text style={[styles.textSub, styles.linkText]}>Войти</Text>
       </View>
     </View>
   );
@@ -76,51 +66,48 @@ export default function Login({ onLogin, baseUrl }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.grey1,
+    flexDirection: 'column',
   },
-  form: {
+  containerUpper: {
+    padding: 24,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.grey2,
-    width: '90%',
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    backgroundColor: colors.black,
+  },
+  containerLower: {
+    height: 64,
+    backgroundColor: colors.black,
+    flexDirection: 'row', // Set flexDirection to 'row'
+    justifyContent: 'center',
+    alignItems: 'center', // Align items vertically to center
   },
   textMain: {
-    marginBottom: 2,
-    width: '90%',
+    marginBottom: 24,
+    width: '100%',
+    fontSize: 34,
     textAlign: 'left',
     fontWeight: '500',
     color: colors.grey5,
   },
   textSub: {
-    fontSize: 12,
+    fontSize: 16,
     marginBottom: 12,
-    width: '90%',
     paddingRight: 1,
-    color: colors.grey5,
-  },
-  input: {
-    width: '90%',
-    marginBottom: 8,
-    padding: 8,
-    borderWidth: 1,
-    backgroundColor: colors.grey5,
-    color: colors.grey2,
-    borderRadius: 5,
+    color: colors.grey4,
   },
   button: {
-    paddingHorizontal: 24,
+    width: '100%',
     backgroundColor: colors.confirmBlue,
-    padding: 6,
-    paddingBottom: 8,
-    borderRadius: 4,
+    padding: 12,
+    paddingBottom: 14,
+    borderRadius: 100,
   },
   buttonText: {
     color: '#fff',
     textAlign: 'center',
   },
+  linkText: {
+    color: colors.confirmBlue
+  }
 });
