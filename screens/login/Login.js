@@ -100,10 +100,10 @@ export default function Login({ onLogin, baseUrl }) {
               ]}
             >
               <View>
-                <Text style={styles.inputLabel}>Как к вам обращаться?</Text>
+                <Text style={styles.inputLabel}>Как к Вам обращаться?</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Имя"
+                  placeholder="Ваше имя"
                   keyboardType="phone-pad"
                   onChangeText={(text) => {}}
                 />
@@ -115,13 +115,13 @@ export default function Login({ onLogin, baseUrl }) {
                   onChangeText={(text) => {}}
                 />
                 {/* SMS Code Input */}
-                <TextInput
+                {/* <TextInput
                   style={styles.input}
                   placeholder="SMS-код (6 цифр)"
                   keyboardType="numeric"
                   maxLength={6}
                   onChangeText={(text) => {}}
-                />
+                /> */}
               </View>
               <Pressable style={[styles.button, styles.btnContinue]}>
                 <Text style={styles.buttonText}>Продолжить</Text>
@@ -173,14 +173,11 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'column',
     height: '100%',
+    marginTop: 14,
     justifyContent: 'space-between'
   },
   firstContainer: {
-    paddingTop: '50%',
-  },
-  inputLabel: {
-    color: colors.grey5,
-    marginBottom: 4,
+    paddingTop: '60%',
   },
   containerUpper: {
     padding: 24,
@@ -217,6 +214,11 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 10,
     borderRadius: 10,
+  },
+  inputLabel: {
+    fontSize: 16,
+    color: colors.grey5,
+    marginBottom: 4,
   },
   button: {
     width: '100%',
