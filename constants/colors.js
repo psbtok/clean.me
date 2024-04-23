@@ -6,6 +6,7 @@ export const colors = {
     grey1: '#1C1C1C',
 
     confirmBlue: '#007bff',
+    confirmGreen: '#1E8316',
 
     black: '#000'
   };

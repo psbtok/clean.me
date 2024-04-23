@@ -1,5 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ScrollView, View, Text, Pressable, TextInput, StyleSheet, Dimensions, Animated } from 'react-native';
+import { 
+  ScrollView, 
+  View, 
+  Text, 
+  Pressable, 
+  TextInput, 
+  StyleSheet, 
+  Dimensions, 
+  Animated 
+} from 'react-native';
 import { colors } from '../../constants/colors.js';
 
 const screenHeight = Dimensions.get('window').height;
@@ -7,10 +16,11 @@ const screenHeight = Dimensions.get('window').height;
 export default function Login({ onLogin, baseUrl }) {
   const scrollViewRef = useRef(null);
   const [isSecondContainerVisible, setIsSecondContainerVisible] = useState(false);
-  const [showInputContainer, setshowInputContainer] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+  const [isToggled, setIsToggled] = useState(false);
 
   const toggleLoginScreen = () => {
+    hidenInputs()
     setIsSecondContainerVisible(!isSecondContainerVisible);
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({
@@ -20,17 +30,30 @@ export default function Login({ onLogin, baseUrl }) {
     }
   };
 
-  const showInputs = () => {
-    setshowInputContainer(true);
+  const toggleInputs = () => {
+    setIsToggled(!isToggled);
+    const toValue = fadeAnim._value === 0 ? 1 : 0; // Toggle fadeAnim value between 0 and 1
     Animated.timing(
-      fadeAnim, // The animated value to modify
+      fadeAnim,
       {
-        toValue: 1, // Target opacity value (1 for fully opaque)
-        duration: 500, // Duration of the animation in milliseconds
-        useNativeDriver: true, // Use the native driver for performance
+        toValue,
+        duration: 300,
+        useNativeDriver: true,
       }
-    ).start(); // Start the animation
-  };  
+    ).start();
+  }; 
+
+  const hidenInputs = () => {
+    setIsToggled(false);
+    Animated.timing(
+      fadeAnim,
+      {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }
+    ).start();
+  }; 
 
   return (
     <ScrollView
@@ -40,36 +63,71 @@ export default function Login({ onLogin, baseUrl }) {
     >
       <View style={styles.loginComponent}>
         {/* First Container */}
-        <View style={[styles.container, styles.firstContainer]}>
-          <View style={styles.containerUpper}>
+        <View style={[
+          styles.container, 
+          styles.firstContainer,
+        ]}>
+          <Animated.View 
+          style={[
+            styles.containerUpper, 
+            {
+              transform: [{
+                translateY: fadeAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, -0.1 * screenHeight] // Adjust the percentage as needed (e.g., 20%)
+                })
+              }]
+            }
+          ]}>
             <Text style={styles.textMain}>Автомойки</Text>
             <Text style={styles.textMain}>рядом.</Text>
             {/* Phone Input */}
-            <Pressable onPress={showInputs} style={styles.button}>
-              <Text style={styles.buttonText}>Создать аккаунт</Text>
+            <Pressable onPress={toggleInputs} style={({ pressed }) => [
+        styles.button,
+        {
+          backgroundColor: isToggled ? 'black' : colors.confirmBlue, // Change background color when toggled
+          borderColor: isToggled ? 'white' : 'transparent', // Change border color when toggled
+        },
+      ]} >
+              <Text style={styles.buttonText}>
+                {isToggled ? 'Регистрация' : 'Создать аккаунт'}  
+              </Text>
             </Pressable>
             <Animated.View 
               style={[
                 styles.inputContainer, 
-                { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [50, 0] }) }] }
+                { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 0] }) }] }
               ]}
             >
-              <TextInput
-                style={styles.input}
-                placeholder="Номер телефона"
-                keyboardType="phone-pad"
-                onChangeText={(text) => {}}
-              />
-              {/* SMS Code Input */}
-              <TextInput
-                style={styles.input}
-                placeholder="SMS-код (6 цифр)"
-                keyboardType="numeric"
-                maxLength={6}
-                onChangeText={(text) => {}}
-              />
+              <View>
+                <Text style={styles.inputLabel}>Как к вам обращаться?</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Имя"
+                  keyboardType="phone-pad"
+                  onChangeText={(text) => {}}
+                />
+                <Text style={styles.inputLabel}>Номер телефона</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="+7(XXX) XX-XX-XXX"
+                  keyboardType="phone-pad"
+                  onChangeText={(text) => {}}
+                />
+                {/* SMS Code Input */}
+                <TextInput
+                  style={styles.input}
+                  placeholder="SMS-код (6 цифр)"
+                  keyboardType="numeric"
+                  maxLength={6}
+                  onChangeText={(text) => {}}
+                />
+              </View>
+              <Pressable style={[styles.button, styles.btnContinue]}>
+                <Text style={styles.buttonText}>Продолжить</Text>
+              </Pressable>
             </Animated.View>
-          </View>
+          </Animated.View>
           <View style={styles.containerLower}>
             <Text style={styles.textSub}>Уже есть аккаунт? </Text>
             <Pressable onPress={toggleLoginScreen}>
@@ -101,6 +159,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     justifyContent: 'center',
     height: '200%',
+    backgroundColor: colors.black,
   },
   loginComponent: {
     height: '100%',
@@ -110,11 +169,18 @@ const styles = StyleSheet.create({
     height: '50%',
     flexDirection: 'column',
   },
-  // firstContainer: {
-  //   marginTop: '-50%',
-  // },
   inputContainer: {
     width: '100%',
+    flexDirection: 'column',
+    height: '100%',
+    justifyContent: 'space-between'
+  },
+  firstContainer: {
+    paddingTop: '50%',
+  },
+  inputLabel: {
+    color: colors.grey5,
+    marginBottom: 4,
   },
   containerUpper: {
     padding: 24,
@@ -159,6 +225,11 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     marginBottom: 10,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'transparent', // Initial border color
+  },
+  btnContinue: {
+    backgroundColor: colors.confirmGreen
   },
   buttonText: {
     color: '#fff',
