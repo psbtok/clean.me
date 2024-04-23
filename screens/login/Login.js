@@ -4,20 +4,6 @@ import { colors } from '../../constants/colors.js';
 
 const screenHeight = Dimensions.get('window').height;
 
-const FadeInView = props => {
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
-
-  return (
-    <Animated.View // Special animatable View
-      style={{
-        ...props.style,
-        opacity: fadeAnim, // Bind opacity to animated value
-      }}>
-      {props.children}
-    </Animated.View>
-  );
-};
-
 export default function Login({ onLogin, baseUrl }) {
   const scrollViewRef = useRef(null);
   const [isSecondContainerVisible, setIsSecondContainerVisible] = useState(false);
@@ -56,7 +42,8 @@ export default function Login({ onLogin, baseUrl }) {
         {/* First Container */}
         <View style={[styles.container, styles.firstContainer]}>
           <View style={styles.containerUpper}>
-            <Text style={styles.textMain}>Автомойки {'\n'}рядом.</Text>
+            <Text style={styles.textMain}>Автомойки</Text>
+            <Text style={styles.textMain}>рядом.</Text>
             {/* Phone Input */}
             <Pressable onPress={showInputs} style={styles.button}>
               <Text style={styles.buttonText}>Создать аккаунт</Text>
@@ -145,6 +132,7 @@ const styles = StyleSheet.create({
   },
   textMain: {
     marginBottom: 24,
+    marginTop: -36,
     width: '100%',
     fontSize: 34,
     textAlign: 'left',
