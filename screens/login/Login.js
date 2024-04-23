@@ -7,14 +7,6 @@ const screenHeight = Dimensions.get('window').height;
 const FadeInView = props => {
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
 
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 10000,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
-
   return (
     <Animated.View // Special animatable View
       style={{
@@ -161,7 +153,7 @@ const styles = StyleSheet.create({
   },
   textSub: {
     fontSize: 16,
-    marginBottom: 12,
+    marginBottom: 10,
     paddingRight: 1,
     color: colors.grey4,
   },
