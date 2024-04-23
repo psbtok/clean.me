@@ -1,13 +1,37 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ScrollView, View, Text, Pressable, TextInput, StyleSheet, Dimensions, Animated } from 'react-native';
 import { colors } from '../../constants/colors.js';
 
 const screenHeight = Dimensions.get('window').height;
 
+const FadeInView = props => {
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 10000,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
+  return (
+    <Animated.View // Special animatable View
+      style={{
+        ...props.style,
+        opacity: fadeAnim, // Bind opacity to animated value
+      }}>
+      {props.children}
+    </Animated.View>
+  );
+};
+
 export default function Login({ onLogin, baseUrl }) {
   const scrollViewRef = useRef(null);
   const [isSecondContainerVisible, setIsSecondContainerVisible] = useState(false);
   const [showInputContainer, setshowInputContainer] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+
   const toggleLoginScreen = () => {
     setIsSecondContainerVisible(!isSecondContainerVisible);
     if (scrollViewRef.current) {
@@ -19,15 +43,15 @@ export default function Login({ onLogin, baseUrl }) {
   };
 
   const showInputs = () => {
-    setshowInputContainer(true)
-    // Animated.timing(
-    //   fadeAnim, // The animated value to modify
-    //   {
-    //     toValue: 1, // Target opacity value (1 for fully opaque)
-    //     duration: 500, // Duration of the animation in milliseconds
-    //     useNativeDriver: true, // Use the native driver for performance
-    //   }
-    // ).start(); // Start the animation
+    setshowInputContainer(true);
+    Animated.timing(
+      fadeAnim, // The animated value to modify
+      {
+        toValue: 1, // Target opacity value (1 for fully opaque)
+        duration: 500, // Duration of the animation in milliseconds
+        useNativeDriver: true, // Use the native driver for performance
+      }
+    ).start(); // Start the animation
   };  
 
   return (
@@ -45,10 +69,10 @@ export default function Login({ onLogin, baseUrl }) {
             <Pressable onPress={showInputs} style={styles.button}>
               <Text style={styles.buttonText}>Создать аккаунт</Text>
             </Pressable>
-            <View 
+            <Animated.View 
               style={[
                 styles.inputContainer, 
-                { opacity: showInputContainer ? 1 : 0 }
+                { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [50, 0] }) }] }
               ]}
             >
               <TextInput
@@ -65,7 +89,7 @@ export default function Login({ onLogin, baseUrl }) {
                 maxLength={6}
                 onChangeText={(text) => {}}
               />
-            </View>
+            </Animated.View>
           </View>
           <View style={styles.containerLower}>
             <Text style={styles.textSub}>Уже есть аккаунт? </Text>
@@ -76,7 +100,7 @@ export default function Login({ onLogin, baseUrl }) {
         </View>        
         <View style={styles.container}>
           <View style={styles.containerUpper}>
-            <Text style={styles.textMain}>Автомойки {'\n'}рядом.</Text>
+            <Text style={styles.textMain}>Вход</Text>
             <Pressable style={styles.button}>
               <Text style={styles.buttonText}>Создать аккаунт</Text>
             </Pressable>
@@ -92,6 +116,7 @@ export default function Login({ onLogin, baseUrl }) {
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -153,7 +178,7 @@ const styles = StyleSheet.create({
     padding: 12,
     paddingBottom: 14,
     marginBottom: 10,
-    borderRadius: 100,
+    borderRadius: 10,
   },
   buttonText: {
     color: '#fff',
