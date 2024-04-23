@@ -18,6 +18,12 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.petosbratok.cleanly"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f59f2d17-cd8d-4924-8f10-8128345a799c"
       }
     }
   }
