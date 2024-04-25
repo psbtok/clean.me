@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import PhoneInput from 'react-native-international-phone-number';
 import { colors } from '../../constants/colors.js'; // Assuming you have a colors file
 
-const CustomPhoneInput = ({ phoneNumber, setPhoneNumber, selectedCountry, setSelectedCountry, isValidPhoneNumber }) => {
+const CustomPhoneInput = ({ phoneNumber, setPhoneNumber, selectedCountry, setSelectedCountry }) => {
   return (
     <View style={styles.container}>
       <PhoneInput
