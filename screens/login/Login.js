@@ -10,6 +10,8 @@ import {
   Animated 
 } from 'react-native';
 import { colors } from '../../constants/colors.js';
+import ProgressDots from '../shared/ProgressDots.js';
+import CustomPhoneInput from '../shared/PhoneInput.js';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -18,9 +20,13 @@ export default function Login({ onLogin, baseUrl }) {
   const [isSecondContainerVisible, setIsSecondContainerVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
   const [isToggled, setIsToggled] = useState(false);
-
+  const [activeDotIndex, setActiveDotIndex] = useState(0); // Индекс активного кружка
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState();
+  
   const toggleLoginScreen = () => {
-    hidenInputs()
+    hidenInputs();
     setIsSecondContainerVisible(!isSecondContainerVisible);
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({
@@ -55,6 +61,18 @@ export default function Login({ onLogin, baseUrl }) {
     ).start();
   }; 
 
+  const validatePhoneNumber = (inputNumber) => {
+    const phonePattern = /^\+7\(\d{3}\)\s\d{2}-\d{2}-\d{3}$/;
+    const isValid = phonePattern.test(inputNumber);
+    setIsValidPhoneNumber(isValid);
+  };
+
+  const handlePhoneNumberChange = (text) => {
+    const formattedNumber = text.replace(/[^0-9]/g, '').replace(/(\d{3})(\d{2})(\d{2})(\d{3})/, '+7($1) $2-$3-$4');
+    setPhoneNumber(formattedNumber);
+    validatePhoneNumber(formattedNumber);
+  };
+
   return (
     <ScrollView
       ref={scrollViewRef}
@@ -83,12 +101,12 @@ export default function Login({ onLogin, baseUrl }) {
             <Text style={styles.textMain}>рядом.</Text>
             {/* Phone Input */}
             <Pressable onPress={toggleInputs} style={({ pressed }) => [
-        styles.button,
-        {
-          backgroundColor: isToggled ? 'black' : colors.confirmBlue, // Change background color when toggled
-          borderColor: isToggled ? 'white' : 'transparent', // Change border color when toggled
-        },
-      ]} >
+              styles.button,
+              {
+                backgroundColor: isToggled ? 'black' : colors.confirmBlue, // Change background color when toggled
+                borderColor: isToggled ? 'white' : 'transparent', // Change border color when toggled
+              },
+            ]} >
               <Text style={styles.buttonText}>
                 {isToggled ? 'Регистрация' : 'Создать аккаунт'}  
               </Text>
@@ -99,33 +117,23 @@ export default function Login({ onLogin, baseUrl }) {
                 { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 0] }) }] }
               ]}
             >
+              <CustomPhoneInput
+                phoneNumber={phoneNumber}
+                setPhoneNumber={setPhoneNumber}
+                selectedCountry={selectedCountry}
+                setSelectedCountry={setSelectedCountry}
+                isValidPhoneNumber={isValidPhoneNumber}
+              />
               <View>
-                <Text style={styles.inputLabel}>Как к Вам обращаться?</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ваше имя"
-                  keyboardType="phone-pad"
-                  onChangeText={(text) => {}}
-                />
-                <Text style={styles.inputLabel}>Номер телефона</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="+7(XXX) XX-XX-XXX"
-                  keyboardType="phone-pad"
-                  onChangeText={(text) => {}}
-                />
-                {/* SMS Code Input */}
-                {/* <TextInput
-                  style={styles.input}
-                  placeholder="SMS-код (6 цифр)"
-                  keyboardType="numeric"
-                  maxLength={6}
-                  onChangeText={(text) => {}}
-                /> */}
+                <ProgressDots style={styles.progressDots} numDots={2} activeDotIndex={activeDotIndex} />
+                <Pressable style={[
+                  styles.button,
+                  styles.btnContinue,
+                  { backgroundColor: isValidPhoneNumber ? colors.confirmGreen : colors.grey4 } // Change button color based on phone number validity
+                ]} disabled={!isValidPhoneNumber}>
+                  <Text style={styles.buttonText}>Продолжить</Text>
+                </Pressable>
               </View>
-              <Pressable style={[styles.button, styles.btnContinue]}>
-                <Text style={styles.buttonText}>Продолжить</Text>
-              </Pressable>
             </Animated.View>
           </Animated.View>
           <View style={styles.containerLower}>
@@ -134,7 +142,7 @@ export default function Login({ onLogin, baseUrl }) {
               <Text style={[styles.textSub, styles.linkText]}>Войти</Text>
             </Pressable>
           </View>
-        </View>        
+        </View>  
         <View style={styles.container}>
           <View style={styles.containerUpper}>
             <Text style={styles.textMain}>Вход</Text>
@@ -153,7 +161,6 @@ export default function Login({ onLogin, baseUrl }) {
     </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -185,6 +192,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.black,
+    paddingBottom: 0,
   },
   containerLower: {
     height: 64,
@@ -239,5 +247,8 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: colors.confirmBlue
-  }
+  },
+  progressDots: {
+    marginBottom: 10,
+  },
 });
