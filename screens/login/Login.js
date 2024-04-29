@@ -10,19 +10,25 @@ import {
 } from 'react-native';
 import { colors } from '../../constants/colors.js';
 import PhoneForm from './PhoneForm';
+import ProgressDots from '../shared/ProgressDots.js';
+import SMSCodeForm from './SMSCodeForm.js';
 
 const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').height;
 
 export default function Login({ onLogin, baseUrl }) {
   const scrollViewRef = useRef(null);
   const [isSecondContainerVisible, setIsSecondContainerVisible] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const offsetAnim = useRef(new Animated.Value(0)).current; // New Animated.Value for containerOffset
   const [isToggled, setIsToggled] = useState(false);
   const [activeDotIndex, setActiveDotIndex] = useState(0); // Индекс активного кружка
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedCountry, setSelectedCountry] = useState();
   const [isPhoneFormValid, setIsPhoneFormValid] = useState(false);
-  
+  const [containerOffset, setContainerOffset] = useState(0);
+  const [smsCode, setSMSCode] = useState('');
+
   const toggleLoginScreen = () => {
     hidenInputs();
     setIsSecondContainerVisible(!isSecondContainerVisible);
@@ -32,6 +38,23 @@ export default function Login({ onLogin, baseUrl }) {
         animated: true,
       });
     }
+  };
+
+  const confirmPhoneNumber = () => {
+    const newContainerOffset = containerOffset + 1;
+    const toValue = -0.5 * (newContainerOffset * screenWidth) + (24 * newContainerOffset); // Considering 24 pixels padding on each side
+  
+    Animated.timing(
+      offsetAnim,
+      {
+        toValue,
+        duration: 450,
+        useNativeDriver: true,
+      }
+    ).start();
+    
+    setContainerOffset(newContainerOffset);
+    setActiveDotIndex(newContainerOffset);
   };
 
   const toggleInputs = () => {
@@ -67,18 +90,76 @@ export default function Login({ onLogin, baseUrl }) {
     >
       <View style={styles.loginComponent}>
         {/* First Container */}
-        <View style={[styles.container, styles.firstContainer]}>
-          <PhoneForm
-            toggleInputs={toggleInputs}
-            fadeAnim={fadeAnim}
-            phoneNumber={phoneNumber}
-            setPhoneNumber={setPhoneNumber}
-            selectedCountry={selectedCountry}
-            setSelectedCountry={setSelectedCountry}
-            activeDotIndex={activeDotIndex}
-            isToggled={isToggled}
-            onValidationChange={setIsPhoneFormValid}
-          />
+        <View style={[styles.container]}>
+        <Animated.View style={[
+          {
+            transform: [{
+              translateX: offsetAnim
+            }]
+          }, 
+          styles.formContainer
+        ]}>
+        {/* <View style={[{ right: containerOffset}, styles.formContainer]}> */}
+            <View style={styles.phoneForm}>
+              <PhoneForm
+                toggleInputs={toggleInputs}
+                fadeAnim={fadeAnim}
+                phoneNumber={phoneNumber}
+                setPhoneNumber={setPhoneNumber}
+                selectedCountry={selectedCountry}
+                setSelectedCountry={setSelectedCountry}
+                isToggled={isToggled}
+                onValidationChange={setIsPhoneFormValid}
+              />
+            </View>
+            <View style={styles.phoneForm}>
+              <SMSCodeForm
+                fadeAnim={fadeAnim}
+                smsCode={smsCode}
+                setSMSCode={setSMSCode}
+              />
+            </View>
+            <View style={styles.phoneForm}>
+              {/* <PhoneForm
+                toggleInputs={toggleInputs}
+                fadeAnim={fadeAnim}
+                phoneNumber={phoneNumber}
+                setPhoneNumber={setPhoneNumber}
+                selectedCountry={selectedCountry}
+                setSelectedCountry={setSelectedCountry}
+                isToggled={isToggled}
+                onValidationChange={setIsPhoneFormValid}
+              /> */}
+            </View>
+          </Animated.View>
+          <Animated.View style={{ opacity: fadeAnim }}>
+            <ProgressDots style={styles.progressDots} numDots={3} activeDotIndex={activeDotIndex} />
+            {activeDotIndex === 0 ? (
+              <Pressable 
+                style={[
+                  styles.button,
+                  styles.btnContinue,
+                  { backgroundColor: isPhoneFormValid ? colors.confirmGreen : colors.grey4 }
+                ]} 
+                // disabled={!isPhoneFormValid}
+                onPress={confirmPhoneNumber}
+              >
+                <Text style={styles.buttonText}>Отправить SMS-код</Text>
+              </Pressable>
+            ) : (
+              <Pressable 
+                style={[
+                  styles.button,
+                  styles.btnContinue,
+                  { backgroundColor: isPhoneFormValid ? colors.confirmGreen : colors.grey4 }
+                ]} 
+                // disabled={!isPhoneFormValid}
+                onPress={confirmPhoneNumber}
+              >
+                <Text style={styles.buttonText}>Проверить код</Text>
+              </Pressable>
+            )}
+          </Animated.View>
           <View style={styles.containerLower}>
             <Text style={styles.textSub}>Уже есть аккаунт? </Text>
             <Pressable onPress={toggleLoginScreen}>
@@ -166,4 +247,20 @@ const styles = StyleSheet.create({
   linkText: {
     color: colors.confirmBlue
   },
+  btnContinue: {
+    width: '100% - 12',
+    marginHorizontal: 24,
+    marginVertical: 4
+  },
+  formContainer: {
+    flex: 1,
+    position: 'relative',
+    justifyContent:'flex-start',
+    flexDirection: 'row',
+    width: '300%'
+  },
+  phoneForm: {
+    flex: 1,
+    width: '25%',
+  }
 });

@@ -24,7 +24,6 @@ export default function App() {
 
   const saveData = async () => {
     try {
-      console.log("TOKEN SAVING");
       await AsyncStorage.setItem('@MyApp:authToken', authToken);
       console.log('Token saved successfully.');
     } catch (error) {
@@ -65,7 +64,7 @@ export default function App() {
 
   return (
     <NavigationContainer style={styles.appContainer}>
-    <StatusBar color="white" barStyle="light-content" />
+    <StatusBar barStyle="light-content" />
     <View style={styles.container}>
       <Stack.Navigator>
         {!authToken ? (

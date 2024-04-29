@@ -8,7 +8,6 @@ import {
     Dimensions
 } from 'react-native';
 import { colors } from '../../constants/colors.js';
-import ProgressDots from '../shared/ProgressDots.js';
 import CustomPhoneInput from '../shared/PhoneInput.js';
 
 const PhoneForm = ({
@@ -18,23 +17,18 @@ const PhoneForm = ({
     setPhoneNumber,
     selectedCountry,
     setSelectedCountry,
-    activeDotIndex,
     isToggled,
-    onValidationChange
+    onValidationChange,
   }) => {
     const screenHeight = Dimensions.get('window').height;
-    const [isPhoneFormValid, setIsPhoneFormValid] = useState(false); // State to store form validation
 
     const validatePhoneNumber = (inputValue) => {
-        console.log(inputValue);
         const expectedFormat = /^\(\d{3}\)\s\d{3}-\d{2}-\d{2}$/;
         return expectedFormat.test(inputValue);
     };
 
     useEffect(() => {
         const isValid = validatePhoneNumber(phoneNumber);
-        setIsPhoneFormValid(isValid);
-        console.log(isValid);
         onValidationChange(isValid); // Send validation status back to the Login component
     }, [phoneNumber]);
 
@@ -78,16 +72,6 @@ const PhoneForm = ({
               selectedCountry={selectedCountry}
               setSelectedCountry={setSelectedCountry}
             />
-            <View>
-              <ProgressDots style={styles.progressDots} numDots={3} activeDotIndex={activeDotIndex} />
-              <Pressable style={[
-                styles.button,
-                styles.btnContinue,
-                { backgroundColor: isPhoneFormValid ? colors.confirmGreen : colors.grey4 }
-              ]} disabled={!isPhoneFormValid}>
-                <Text style={styles.buttonText}>Продолжить</Text>
-              </Pressable>
-            </View>
           </Animated.View>
         </Animated.View>
       </View>
@@ -107,7 +91,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   firstContainer: {
-    paddingTop: '60%',
+    paddingTop: '80%',
   },
   containerUpper: {
     padding: 24,
