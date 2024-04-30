@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { colors } from '../../constants/colors.js';
 
-const SMSCodeForm = ({ smsCode, setSMSCode }) => {
+const SMSCodeForm = ({ smsCode, setSMSCode, setIsSMSCodeValid }) => {
   const inputRefs = [
     useRef(null),
     useRef(null),
@@ -61,6 +61,11 @@ const SMSCodeForm = ({ smsCode, setSMSCode }) => {
     }
   };
 
+  // useEffect to update smsCodeValid based on smsCode
+  useEffect(() => {
+    setIsSMSCodeValid(smsCode.length === inputRefs.length);
+  }, [smsCode, setIsSMSCodeValid]);
+
   return (
     <View style={styles.container}>
       <View style={styles.containerUpper}>
@@ -76,6 +81,7 @@ const SMSCodeForm = ({ smsCode, setSMSCode }) => {
               keyboardType="numeric"
               placeholder='_'
               maxLength={1}
+              autoCompleteType="off"
             />
           ))}
         </View>

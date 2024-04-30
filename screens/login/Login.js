@@ -12,22 +12,30 @@ import { colors } from '../../constants/colors.js';
 import PhoneForm from './PhoneForm';
 import ProgressDots from '../shared/ProgressDots.js';
 import SMSCodeForm from './SMSCodeForm.js';
+import PasswordForm from './PasswordForm.js';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').height;
-
+ 
 export default function Login({ onLogin, baseUrl }) {
   const scrollViewRef = useRef(null);
   const [isSecondContainerVisible, setIsSecondContainerVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const offsetAnim = useRef(new Animated.Value(0)).current; // New Animated.Value for containerOffset
+  const [containerOffset, setContainerOffset] = useState(0);
   const [isToggled, setIsToggled] = useState(false);
-  const [activeDotIndex, setActiveDotIndex] = useState(0); // Индекс активного кружка
+  const [currentFormIndex, setCurrentFormIndex] = useState(0);
+
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedCountry, setSelectedCountry] = useState();
   const [isPhoneFormValid, setIsPhoneFormValid] = useState(false);
-  const [containerOffset, setContainerOffset] = useState(0);
+
   const [smsCode, setSMSCode] = useState('');
+  const [isSMSCodeValid, setIsSMSCodeValid] = useState(false);
+
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+  const [isPasswordValid, setIsPasswordValid] = useState('');
 
   const toggleLoginScreen = () => {
     hidenInputs();
@@ -38,6 +46,10 @@ export default function Login({ onLogin, baseUrl }) {
         animated: true,
       });
     }
+  };
+
+  const confirmPassword = () => {
+    console.log("HELLO WORLD");
   };
 
   const confirmPhoneNumber = () => {
@@ -54,7 +66,7 @@ export default function Login({ onLogin, baseUrl }) {
     ).start();
     
     setContainerOffset(newContainerOffset);
-    setActiveDotIndex(newContainerOffset);
+    setCurrentFormIndex(currentFormIndex + 1);
   };
 
   const toggleInputs = () => {
@@ -117,46 +129,56 @@ export default function Login({ onLogin, baseUrl }) {
                 fadeAnim={fadeAnim}
                 smsCode={smsCode}
                 setSMSCode={setSMSCode}
+                setIsSMSCodeValid={setIsSMSCodeValid}
               />
             </View>
             <View style={styles.phoneForm}>
-              {/* <PhoneForm
-                toggleInputs={toggleInputs}
-                fadeAnim={fadeAnim}
-                phoneNumber={phoneNumber}
-                setPhoneNumber={setPhoneNumber}
-                selectedCountry={selectedCountry}
-                setSelectedCountry={setSelectedCountry}
-                isToggled={isToggled}
-                onValidationChange={setIsPhoneFormValid}
-              /> */}
+              <PasswordForm
+                password={password}
+                repeatPassword={repeatPassword}
+                setPassword={setPassword}
+                setRepeatPassword={setRepeatPassword}
+                setIsPasswordValid={setIsPasswordValid}
+              />
             </View>
           </Animated.View>
           <Animated.View style={{ opacity: fadeAnim }}>
-            <ProgressDots style={styles.progressDots} numDots={3} activeDotIndex={activeDotIndex} />
-            {activeDotIndex === 0 ? (
+            <ProgressDots style={styles.progressDots} numDots={3} activeDotIndex={currentFormIndex} />
+            {currentFormIndex === 0 ? (
               <Pressable 
                 style={[
                   styles.button,
                   styles.btnContinue,
                   { backgroundColor: isPhoneFormValid ? colors.confirmGreen : colors.grey4 }
                 ]} 
-                // disabled={!isPhoneFormValid}
+                disabled={!isPhoneFormValid}
                 onPress={confirmPhoneNumber}
               >
                 <Text style={styles.buttonText}>Отправить SMS-код</Text>
+              </Pressable>
+            ) : currentFormIndex === 1 ? (
+              <Pressable 
+                style={[
+                  styles.button,
+                  styles.btnContinue,
+                  { backgroundColor: isSMSCodeValid ? colors.confirmGreen : colors.grey4 }
+                ]} 
+                disabled={!isSMSCodeValid}
+                onPress={confirmPhoneNumber}
+              >
+                <Text style={styles.buttonText}>Проверить код</Text>
               </Pressable>
             ) : (
               <Pressable 
                 style={[
                   styles.button,
                   styles.btnContinue,
-                  { backgroundColor: isPhoneFormValid ? colors.confirmGreen : colors.grey4 }
+                  { backgroundColor: isPasswordValid ? colors.confirmGreen : colors.grey4 }
                 ]} 
-                // disabled={!isPhoneFormValid}
-                onPress={confirmPhoneNumber}
+                disabled={!isPasswordValid}
+                onPress={confirmPassword}
               >
-                <Text style={styles.buttonText}>Проверить код</Text>
+                <Text style={styles.buttonText}>Подтвердить пароль</Text>
               </Pressable>
             )}
           </Animated.View>
